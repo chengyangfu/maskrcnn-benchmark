@@ -155,7 +155,9 @@ class ModelCatalog(object):
         "36761843/e2e_mask_rcnn_X-101-32x8d-FPN_1x": "06_35_59.RZotkLKI",
         "37129812/e2e_mask_rcnn_X-152-32x8d-FPN-IN5k_1.44x": "09_35_36.8pzTQKYK",
         # keypoints
-        "37697547/e2e_keypoint_rcnn_R-50-FPN_1x": "08_42_54.kdzV35ao"
+        "37697547/e2e_keypoint_rcnn_R-50-FPN_1x": "08_42_54.kdzV35ao",
+        # RetinaNet
+        "36768636/retinanet_R-50-FPN_1x": "08_29_48.t4zc9clc"
     }
 
     @staticmethod
@@ -182,6 +184,9 @@ class ModelCatalog(object):
         prefix = ModelCatalog.S3_C2_DETECTRON_URL
         dataset_tag = "keypoints_" if "keypoint" in name else ""
         suffix = ModelCatalog.C2_DETECTRON_SUFFIX.format(dataset_tag, dataset_tag)
+        # retinanet
+        if "retinanet" in name:
+            suffix = suffix.replace("generalized_rcnn", "retinanet")
         # remove identification prefix
         name = name[len("Caffe2Detectron/COCO/"):]
         # split in <model_id> and <model_name>

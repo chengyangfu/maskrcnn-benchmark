@@ -81,6 +81,24 @@ def _rename_fpn_weights(layer_keys, stage_names):
     return layer_keys
 
 
+def _rename_retinanet_weights(layer_keys):
+    layer_keys = [k.replace(".fpn3", "")  for k in layer_keys]
+
+    for i in range(4):
+        layer_keys = [k.replace("retnet.bbox.conv.n{}".format(i),
+                                "rpn.head.bbox_tower.{}".format(i*2))  for k in layer_keys]
+        layer_keys = [k.replace("retnet.cls.conv.n{}".format(i),
+                                "rpn.head.cls_tower.{}".format(i*2))  for k in layer_keys]
+
+    layer_keys = [k.replace("retnet.bbox.pred", "rpn.head.bbox_pred")  for k in layer_keys]
+    layer_keys = [k.replace("retnet.cls.pred", "rpn.head.cls_logits")  for k in layer_keys]
+
+    # FPN6 and FPN7
+    layer_keys = [k.replace("fpn.6", "fpn.top_blocks.p6")  for k in layer_keys]
+    layer_keys = [k.replace("fpn.7", "fpn.top_blocks.p7")  for k in layer_keys]
+
+    return layer_keys
+
 def _rename_weights_for_resnet(weights, stage_names):
     original_keys = sorted(weights.keys())
     layer_keys = sorted(weights.keys())
@@ -107,6 +125,9 @@ def _rename_weights_for_resnet(weights, stage_names):
 
     # Rename for our RPN structure
     layer_keys = [k.replace("rpn.", "rpn.head.") for k in layer_keys]
+
+    # RetinaNet
+    layer_keys = _rename_retinanet_weights(layer_keys)
 
     key_map = {k: v for k, v in zip(original_keys, layer_keys)}
 
